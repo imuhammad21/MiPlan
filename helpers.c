@@ -35,41 +35,39 @@ int frequency(string note)
         i = 2;
         char accidental = note[1];
         // Add or subtract semitone given by accidental
-        if (accidental == '#')
+        switch (accidental)
         {
-            semitone += 1;
-        }
-        if (accidental == 'b')
-        {
-            semitone -= 1;
+            case '#':
+                semitone += 1;
+                break;
+            case 'b':
+                semitone -= 1;
+                break;
         }
     }
     // Converts ASCII value of octave into Numerical Index
     double octave = note[i] - zero;
     // Add or subtract number of semitones from 'A' given by letter
-    if (letter == 'B')
+    switch (letter)
     {
-        semitone += 2;
-    }
-    if (letter == 'C')
-    {
-        semitone -= 9;
-    }
-    if (letter == 'D')
-    {
-        semitone -= 7;
-    }
-    if (letter == 'E')
-    {
-        semitone -= 5;
-    }
-    if (letter == 'F')
-    {
-        semitone -= 4;
-    }
-    if (letter == 'G')
-    {
-        semitone -= 2;
+        case 'B':
+            semitone += 2;
+            break;
+        case 'C':
+            semitone -= 9;
+            break;
+        case 'D':
+            semitone -= 7;
+            break;
+        case 'E':
+            semitone -= 5;
+            break;
+        case 'F':
+            semitone -= 4;
+            break;
+        case 'G':
+            semitone -= 2;
+            break;
     }
     // Finds the exponent to which to raise 2 in the equation freq = 2^n *440
     double exponent = (octave + (semitone / 12.00) - 4);
