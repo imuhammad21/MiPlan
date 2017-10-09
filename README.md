@@ -16,7 +16,7 @@ There are sixteen members in a variable of type 'struct rusage'
 ## Why do you think we pass `before` and `after` by reference (instead of by value) to `calculate`, even though we're not changing their contents?
 
 Both pointers a and b are set to the ru_utime.tv_usec and ru_stime.tv_usec, so instead of having to copy the values of these constants in two different places,
-you pass before and after reference in order to give them flexibiltiy in what the can print to and elimnate the need for more than two variables.
+you pass before and after reference in order to give them flexibiltiy in what they can print to and elimnate the need for more than two variables.
 
 ## Explain as precisely as possible, in a paragraph or more, how `main` goes about reading words from a file. In other words, convince us that you indeed understand how that function's `for` loop works.
 
@@ -36,5 +36,5 @@ each character in the array at once.
 ## Why do you think we declared the parameters for `check` and `load` as `const` (which means "constant")?
 
 Declaring parameters for 'check' and 'load' as constants protects against anyone's code who redefines check or load from altering the true input to the
-function.  In other words, if the input to check is a constant, even if I write 'check = x' later on in my code, the input stas the same, which is what
-we want in order to evaluate everyone's code equally and fairly
+function.  In other words, if the input to check is a constant, even if I write 'check = x' later on in my code, the input stays the same, which is what
+we want in order to evaluate everyone's code equally and fairly.
