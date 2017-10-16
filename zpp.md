@@ -19,48 +19,14 @@ function multiply($x, $y)
     {
         return($y)
     }
-    $a <- $x
-    $b <- $y
-    $m <- 1
-    if($x < 0)
+    if (0 < $y)
     {
-        while(m < y)
-        {
-            $a <- add($a, $x)
-            $m <- add($m,1)
-        }
-        if (0 < $y)
-        {
-            return($a)
-        }
+        return add($x, multiply($x, subtract($y, 1)))
     }
-    if($y < 0)
+    if ($y < 0)
     {
-        while($m < $x)
-        {
-            $b <- add($b, $y)
-            $m <- add($m, $1)
-        }
-        if (0 < $x)
-        {
-            return($b)
-        }
-        $n <- subract(0, $x)
-        $o <- 1
-        $c <- $n
-        while($m < -$y)
-        {
-            $c <- add($c,$n)
-            $m <- add($m,1)
-        }
-        return ($c)
+        return -multiply($x, -$y)
     }
-    while(m < y)
-    {
-        $a <- add($a, $x)
-        $m <- add($m,1)
-    }
-    return($a)
 }
 
 3.
@@ -83,7 +49,6 @@ function multiply($x, $y)
         return -multiply($x, -$y)
     }
 }
-
 
 ## Debrief
 

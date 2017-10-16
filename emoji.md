@@ -9,6 +9,7 @@ and 2 hexadeciaml charcters desrbie 1 byte. 5/2 = 2.5, which is the number of by
 jack-o-lantern cannot be represented by a char.
 
 3.
+bool hex(int n, string s);
 
 emoji get_emoji(string prompt)
 {
@@ -17,15 +18,24 @@ emoji get_emoji(string prompt)
     {
         emj = get_string("%s", prompt);
     }
-    // All of the emoji hexadecimals which I looked up had 5 hexademical digits after the U+, which is why I check each of these five
-    // digits
-    while (emj[0] != 'U' || emj[1] != '+' || !isxdigit(emj[2]) || !isxdigit(emj[3])
-           || !isxdigit(emj[4]) || !isxdigit(emj[5]) || !isxdigit(emj[6]));
+    while(emj[0] != 'U' || emj[1] != '+' || !hex(strlen(emj), emj));
     emj[0] = '0';
     emj[1] = 'x';
     char null_terminator = '\0';
-    char *endptr = &null_terminator;
+    char * endptr = &null_terminator;
     return strtol(emj, &endptr, 16);
+}
+
+bool hex(int n, string s)
+{
+    for (int i = 2; i < n; i++)
+    {
+        if (!isxdigit(s[i]))
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 

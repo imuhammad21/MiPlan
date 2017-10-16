@@ -7,13 +7,10 @@
 2. Yes, the array {0, 0, 0, 0, 0} is balanced.
 
 3.
-
 bool balanced(int array[], int size)
 {
     int partial1 = array[0];
-    // int sum1 = 0;
     int partial2 = array[size-1];
-    // int sum2 = 0;
     if (size <= 3)
     {
         if (array[0] == array[size-1])
@@ -42,7 +39,6 @@ bool balanced(int array[], int size)
         return false;
     }
 }
-
 
 ## Debrief
 
