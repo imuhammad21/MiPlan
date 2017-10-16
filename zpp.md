@@ -21,11 +21,11 @@ function multiply($x, $y)
     }
     if (0 < $y)
     {
-        return add($x, multiply($x, subtract($y, 1)))
+        return(add($x, multiply($x, subtract($y, 1))))
     }
     if ($y < 0)
     {
-        return -multiply($x, -$y)
+        return(-multiply($x, -$y))
     }
 }
 
@@ -42,11 +42,11 @@ function multiply($x, $y)
     }
     if (0 < $y)
     {
-        return add($x, multiply($x, subtract($y, 1)))
+        return(add($x, multiply($x, subtract($y, 1))))
     }
     if ($y < 0)
     {
-        return -multiply($x, -$y)
+        return(-multiply($x, -$y))
     }
 }
 
