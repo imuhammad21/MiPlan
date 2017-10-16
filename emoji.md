@@ -2,7 +2,7 @@
 
 ## Questions
 
-1. 2.5 bytes are necessary to represnt the jack-o-lantern emoji in Unicode. The code has 5 hexadecimal characters after the predeing 0x,
+1. 2.5 bytes are necessary to represnt the jack-o-lantern emoji in Unicode. The code has 5 hexadecimal characters after the preceding 0x,
 and 2 hexadeciaml charcters desrbie 1 byte. 5/2 = 2.5, which is the number of bytes necessary to represent this emoji.
 
 2. The storage size for a char in c is one byte, and the jack-o-lantern requires 2.5 bytes to be represented.  Therefore, the

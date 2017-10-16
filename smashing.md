@@ -13,12 +13,13 @@ serves as warnings when the toxic gas concentration is too high, so both types o
 3.
 int overflow(int array[5])
 {
-    return 5* array[6];
+    array[12] = 4;
+    return 5 * array[12];
 }
 
 ## Debrief
 
 1. I found the attached youtube link and stack overflow's discussion of the stack vs the heap helpful in answering this problem's
-questions
+questions.
 
-2. I spent about a half an hour on this problem's questions.
+2. I spent about an hour on this problem's questions.
