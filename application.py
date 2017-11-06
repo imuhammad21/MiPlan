@@ -74,9 +74,14 @@ def buy():
         if not request.form.get("shares"):
             return apology("Enter a number of shares to buy")
         stock = lookup(request.form.get("symbol"))
+        try:
+            int(request.form.get("shares"))
+        except:
+            return apology("Enter whole number of shares to buy")
         if float(request.form.get("shares")) <= 0 or not request.form.get("shares").isdigit():
             return apology("Enter whole number of shares to buy")
         cash = db.execute("SELECT cash FROM users WHERE id = :id", id=session["user_id"])
+
         if float(stock["price"]) * int(request.form.get("shares")) > cash[0]["cash"]:
             return apology("Cannot Afford")
 
@@ -216,9 +221,6 @@ def sell():
         db.execute("UPDATE users SET cash = :cash WHERE id=:id",
                    cash=cash[0]["cash"] + stock["price"] * int(request.form.get("shares")), id=session["user_id"])
         totalshares = shares[0]["number"] - int(request.form.get("shares"))
-        # if totalshares > 0:
-        #     db.execute("UPDATE portfolio SET number =:number WHERE user_id=:id AND symbol=:symbol", number=totalshares, id=session["user_id"],
-        #               symbol=request.form.get("symbol"))
 
         cash = db.execute("SELECT cash FROM users WHERE id = :id", id=session["user_id"])
         if float(stock["price"]) * int(request.form.get("shares")) > cash[0]["cash"]:
