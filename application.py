@@ -1,5 +1,4 @@
 from cs50 import SQL
-from datetime import datetime
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
@@ -37,22 +36,27 @@ db = SQL("sqlite:///finance.db")
 @login_required
 def index():
     portfolio_stock = db.execute(
-        "SELECT number, symbol FROM portfolio WHERE user_id =:id", id=session["user_id"])
+        "SELECT number, symbol, id FROM portfolio WHERE user_id =:id", id=session["user_id"])
 
     totalcash = 0
-    for i in portfolio_stock:
-        symbol = i["symbol"]
-        number = i["number"]
+    for stock in portfolio_stock:
+        symbol = stock["symbol"]
+        number = stock["number"]
+        id = stock["id"]
+        if not lookup(symbol):
+            return apology("Try Again")
         current_price = lookup(symbol)["price"]
         total = number * current_price
         totalcash += total
-        db.execute("UPDATE portfolio SET price =:price, total =:total WHERE user_id=:id AND symbol=:symbol",
-                   price=current_price, total=total, id=session["user_id"], symbol=symbol)
+        db.execute("UPDATE portfolio SET price =:price, total =:total WHERE user_id=:user_id AND symbol=:symbol AND id=:id",
+                   price=current_price, total=total, user_id=session["user_id"], symbol=symbol, id=id)
     cash = db.execute("SELECT cash FROM users WHERE id=:id", id=session["user_id"])
     totalcash += cash[0]["cash"]
-
     uportfolio = db.execute(
-        "SELECT symbol, price, SUM(number), total, user_id FROM portfolio WHERE user_id=:id GROUP BY symbol", id=session["user_id"])
+        "SELECT symbol, price, SUM(number), SUM(total), user_id FROM portfolio WHERE user_id=:id GROUP BY symbol", id=session["user_id"])
+    for i in range(len(uportfolio)):
+        uportfolio[i]["number"] = uportfolio[i]["SUM(number)"]
+        uportfolio[i]["total"] = uportfolio[i]["SUM(total)"]
 
     return render_template("index.html", uportfolio=uportfolio, cash=usd(cash[0]["cash"]), total=usd(totalcash))
 
@@ -76,10 +80,6 @@ def buy():
         if float(stock["price"]) * int(request.form.get("shares")) > cash[0]["cash"]:
             return apology("Cannot Afford")
 
-        db.execute("INSERT INTO portfolio (symbol, price, number, total, time, user_id) VALUES(:symbol, :price, :number, :total, :time, :user_id)", symbol=request.form.get("symbol"),
-                   price=stock["price"], number=int(request.form.get("shares")),
-                   total=stock["price"] * int(request.form.get("shares")), time=datetime.now(), user_id=session["user_id"])
-
         db.execute("UPDATE users SET cash = :cash WHERE id=:id", cash=cash[0]["cash"] - stock["price"] * int(request.form.get("shares")),
                    id=session["user_id"])
         number = db.execute("SELECT number FROM portfolio WHERE user_id=:id AND symbol=:symbol",
@@ -98,8 +98,8 @@ def buy():
 @app.route("/history")
 @login_required
 def history():
-    """Show history of transactions"""
-    return apology("TODO")
+    transactions = db.execute("SELECT * FROM portfolio WHERE user_id=:id", id=session["user_id"])
+    return render_template("history.html", transactions = transactions)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -154,11 +154,14 @@ def logout():
 @login_required
 def quote():
     if request.method == "POST":
+        # Ensure user inputs a symbol
         if not request.form.get("symbol"):
             return apology("Please enter a symbol")
+        # Ensure user inputs valid symbol
         if not lookup(request.form.get("symbol")):
             return apology("Please enter valid symbol")
         info = lookup(request.form.get("symbol"))
+        # Redirect to a page that tells the user how much a share of the stock costs
         return render_template("quoted.html", name=info["name"], price=info["price"], symbol=info["symbol"])
     else:
         return render_template("quote.html")
@@ -174,9 +177,9 @@ def register():
         # Checks if user inputted password
         if not request.form.get("password"):
             return apology("Missing password!")
-        # Checks if passwords match
-        if len(request.form.get("password")) < 8:
-            return apology("Password must be 8 characters")
+        # Checks if password is 9 or more characters
+        # if len(request.form.get("password")) <= 8:
+            # return apology("Password must be 8 characters")
         if request.form.get("password") != request.form.get("confirmation"):
             return apology("Passwords do not match")
         generate_password_hash(request.form.get("password"))
@@ -195,28 +198,33 @@ def register():
 @login_required
 def sell():
     if request.method == "POST":
-        stock = lookup(request.args.get("symbol"))
+        stock = lookup(request.form.get("symbol"))
+        # Ensure user inputted number of shares
         if not request.form.get("shares"):
             return apology("Enter a number of shares to sell")
+        # Ensure user inputted whole number for number of shares
         if float(request.form.get("shares")) <= 0 or not request.form.get("shares").isdigit():
             return apology("Ensure number of shares to sell is positive and a whole number")
-        shares = db.execute("SELECT SUM(number) FROM portfolio WHERE user_id=:id, symbol=:symbol GROUP BY symbol",
-                            id=session["user_id"], symbol=request.args.get("symbol"))
+        # Declare table which has each symbol and total number of shares of that stock
+        shares = db.execute("SELECT SUM(number) FROM portfolio WHERE user_id=:id AND symbol=:symbol GROUP BY symbol",
+                            id=session["user_id"], symbol=request.form.get("symbol"))
+        for i in range(len(shares)):
+            shares[0]["number"] = shares[i]["SUM(number)"]
         if int(shares[0]["number"]) < int(request.form.get("shares")):
             return apology("Too Many Shares")
         cash = db.execute("SELECT cash FROM users WHERE id = :id", id=session["user_id"])
         db.execute("UPDATE users SET cash = :cash WHERE id=:id",
                    cash=cash[0]["cash"] + stock["price"] * int(request.form.get("shares")), id=session["user_id"])
         totalshares = shares[0]["number"] - int(request.form.get("shares"))
-        if totalshares > 0:
-            db.execute("UPDATE portfolio SET number =:number WHERE user_id=:id AND symbol=:symbol", number=totalshares, id=session["user_id"],
-                       symbol=request.args.get("symbol"))
+        # if totalshares > 0:
+        #     db.execute("UPDATE portfolio SET number =:number WHERE user_id=:id AND symbol=:symbol", number=totalshares, id=session["user_id"],
+        #               symbol=request.form.get("symbol"))
 
         cash = db.execute("SELECT cash FROM users WHERE id = :id", id=session["user_id"])
         if float(stock["price"]) * int(request.form.get("shares")) > cash[0]["cash"]:
             return apology("Cannot Afford")
         db.execute("INSERT INTO portfolio(symbol, number, price, total, user_id) VALUES(:symbol, :number, :price, :total, :id)",
-                   symbol=request.args.get("symbol"), number=int(request.form.get("shares")) * -1, price=float(stock["price"]),
+                   symbol=request.form.get("symbol"), number=int(request.form.get("shares")) * -1, price=float(stock["price"]),
                    total=stock["price"] * int(request.form.get("shares")), id=session["user_id"])
         return redirect("/")
     else:
