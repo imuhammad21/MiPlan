@@ -36,7 +36,8 @@ db = SQL("sqlite:///finance.db")
 @app.route("/")
 @login_required
 def index():
-    portfolio_stock = db.execute("SELECT number, symbol FROM portfolio WHERE user_id =:id", id=session["user_id"])
+    portfolio_stock = db.execute(
+        "SELECT number, symbol FROM portfolio WHERE user_id =:id", id=session["user_id"])
 
     totalcash = 0
     for i in portfolio_stock:
@@ -46,14 +47,14 @@ def index():
         total = number * current_price
         totalcash += total
         db.execute("UPDATE portfolio SET price =:price, total =:total WHERE user_id=:id AND symbol=:symbol",
-        price = current_price, total = total, id = session["user_id"], symbol = symbol)
+                   price=current_price, total=total, id=session["user_id"], symbol=symbol)
     cash = db.execute("SELECT cash FROM users WHERE id=:id", id=session["user_id"])
     totalcash += cash[0]["cash"]
 
-    uportfolio = db.execute("SELECT symbol, price, SUM(number), total, user_id FROM portfolio WHERE user_id=:id GROUP BY symbol", id=session["user_id"])
+    uportfolio = db.execute(
+        "SELECT symbol, price, SUM(number), total, user_id FROM portfolio WHERE user_id=:id GROUP BY symbol", id=session["user_id"])
 
-    return render_template("index.html", uportfolio = uportfolio, cash = usd(cash[0]["cash"]), total = usd(totalcash))
-
+    return render_template("index.html", uportfolio=uportfolio, cash=usd(cash[0]["cash"]), total=usd(totalcash))
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -75,25 +76,23 @@ def buy():
         if float(stock["price"]) * int(request.form.get("shares")) > cash[0]["cash"]:
             return apology("Cannot Afford")
 
-        db.execute("INSERT INTO portfolio (symbol, price, number, total, time, user_id) VALUES(:symbol, :price, :number, :total, :time, :user_id)", symbol = request.form.get("symbol"),
-        price = stock["price"], number = int(request.form.get("shares")),
-        total = stock["price"] * int(request.form.get("shares")), time = datetime.now(), user_id = session["user_id"])
+        db.execute("INSERT INTO portfolio (symbol, price, number, total, time, user_id) VALUES(:symbol, :price, :number, :total, :time, :user_id)", symbol=request.form.get("symbol"),
+                   price=stock["price"], number=int(request.form.get("shares")),
+                   total=stock["price"] * int(request.form.get("shares")), time=datetime.now(), user_id=session["user_id"])
 
-        db.execute("UPDATE users SET cash = :cash WHERE id=:id", cash = cash[0]["cash"] - stock["price"] * int(request.form.get("shares")),
-        id =session["user_id"])
-        number = db.execute("SELECT number FROM portfolio WHERE user_id=:id AND symbol=:symbol", id=session["user_id"], symbol=request.form.get("symbol"))
+        db.execute("UPDATE users SET cash = :cash WHERE id=:id", cash=cash[0]["cash"] - stock["price"] * int(request.form.get("shares")),
+                   id=session["user_id"])
+        number = db.execute("SELECT number FROM portfolio WHERE user_id=:id AND symbol=:symbol",
+                            id=session["user_id"], symbol=request.form.get("symbol"))
 
         db.execute("INSERT INTO portfolio(symbol, number, price, total, user_id) VALUES(:symbol, :number, :price, :total, :id)",
-        symbol = request.form.get("symbol"), number = int(request.form.get("shares")), price = float(stock["price"]),
-        total = stock["price"] * int(request.form.get("shares")), id=session["user_id"])
+                   symbol=request.form.get("symbol"), number=int(request.form.get("shares")), price=float(stock["price"]),
+                   total=stock["price"] * int(request.form.get("shares")), id=session["user_id"])
 
         return redirect("/")
 
     else:
         return render_template("buy.html")
-
-
-    return apology("TODO")
 
 
 @app.route("/history")
@@ -209,7 +208,7 @@ def sell():
         db.execute("UPDATE users SET cash = :cash WHERE id=:id",
                    cash=cash[0]["cash"] + stock["price"] * int(request.form.get("shares")), id=session["user_id"])
         totalshares = shares[0]["number"] - int(request.form.get("shares"))
-        elif totalshares > 0:
+        if totalshares > 0:
             db.execute("UPDATE portfolio SET number =:number WHERE user_id=:id AND symbol=:symbol", number=totalshares, id=session["user_id"],
                        symbol=request.args.get("symbol"))
 
