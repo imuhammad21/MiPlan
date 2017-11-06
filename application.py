@@ -160,13 +160,14 @@ def quote():
         if not lookup(request.form.get("symbol")):
             return apology("Please enter valid symbol")
         info = lookup(request.form.get("symbol"))
-        return render_template("quoted.html", name = info["name"], price = info["price"], symbol = info["symbol"])
+        return render_template("quoted.html", name=info["name"], price=info["price"], symbol=info["symbol"])
     else:
         return render_template("quote.html")
 
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method =="POST":
+    if request.method == "POST":
         # Checks if user inputted username
         if not request.form.get("username"):
             return apology("Missing username!")
@@ -180,8 +181,8 @@ def register():
         if request.form.get("password") != request.form.get("confirmation"):
             return apology("Passwords do not match")
         generate_password_hash(request.form.get("password"))
-        result = db.execute("INSERT INTO users (username, hash) VALUES(:username, :hash)", username = request.form.get("username"),
-        hash = generate_password_hash(request.form.get("password")))
+        result = db.execute("INSERT INTO users (username, hash) VALUES(:username, :hash)", username=request.form.get("username"),
+                            hash=generate_password_hash(request.form.get("password")))
         if not result:
             return apology("Username already in use")
         session["user_id"] = result
@@ -190,37 +191,40 @@ def register():
     else:
         return render_template("register.html")
 
+
 @app.route("/sell", methods=["GET", "POST"])
 @login_required
 def sell():
-    if request.method =="POST":
+    if request.method == "POST":
         stock = lookup(request.args.get("symbol"))
         if not request.form.get("shares"):
             return apology("Enter a number of shares to sell")
         if float(request.form.get("shares")) <= 0 or not request.form.get("shares").isdigit():
             return apology("Ensure number of shares to sell is positive and a whole number")
-        shares = db.execute("SELECT SUM(number) FROM portfolio WHERE user_id=:id, symbol=:symbol GROUP BY symbol",id=session["user_id"], symbol =request.args.get("symbol"))
+        shares = db.execute("SELECT SUM(number) FROM portfolio WHERE user_id=:id, symbol=:symbol GROUP BY symbol",
+                            id=session["user_id"], symbol=request.args.get("symbol"))
         if int(shares[0]["number"]) < int(request.form.get("shares")):
             return apology("Too Many Shares")
         cash = db.execute("SELECT cash FROM users WHERE id = :id", id=session["user_id"])
-        db.execute("UPDATE users SET cash = :cash WHERE id=:id", cash = cash[0]["cash"] + stock["price"] * int(request.form.get("shares")), id=session["user_id"])
+        db.execute("UPDATE users SET cash = :cash WHERE id=:id",
+                   cash=cash[0]["cash"] + stock["price"] * int(request.form.get("shares")), id=session["user_id"])
         totalshares = shares[0]["number"] - int(request.form.get("shares"))
-        if totalshares == 0:
-            db.execute("DELETE FROM portfolio WHERE user_id=:id, symbol=:symbol", id=session["user_id"], symbol = request.args.get("symbol"))
         elif totalshares > 0:
             db.execute("UPDATE portfolio SET number =:number WHERE user_id=:id AND symbol=:symbol", number=totalshares, id=session["user_id"],
-            symbol = request.args.get("symbol"))
+                       symbol=request.args.get("symbol"))
 
         cash = db.execute("SELECT cash FROM users WHERE id = :id", id=session["user_id"])
         if float(stock["price"]) * int(request.form.get("shares")) > cash[0]["cash"]:
             return apology("Cannot Afford")
         db.execute("INSERT INTO portfolio(symbol, number, price, total, user_id) VALUES(:symbol, :number, :price, :total, :id)",
-        symbol = request.args.get("symbol"), number = int(request.form.get("shares")) * -1, price = float(stock["price"]),
-        total = stock["price"] * int(request.form.get("shares")), id=session["user_id"])
+                   symbol=request.args.get("symbol"), number=int(request.form.get("shares")) * -1, price=float(stock["price"]),
+                   total=stock["price"] * int(request.form.get("shares")), id=session["user_id"])
         return redirect("/")
     else:
-        symbols = db.execute("SELECT symbol FROM portfolio WHERE user_id=:id GROUP BY symbol", id=session["user_id"])
-        return render_template("sell.html", symbols = symbols)
+        symbols = db.execute(
+            "SELECT symbol FROM portfolio WHERE user_id=:id GROUP BY symbol", id=session["user_id"])
+        return render_template("sell.html", symbols=symbols)
+
 
 def errorhandler(e):
     """Handle error"""
