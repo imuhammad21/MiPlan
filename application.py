@@ -48,12 +48,13 @@ def articles():
 @app.route("/search")
 def search():
     # Asquire location from database
-    location = db.execute("SELECT * FROM places WHERE postal_code LIKE :q OR place_name LIKE :q OR admin_name1 LIKE :q", q=request.args.get("q") + "%")
+    location = db.execute(
+        "SELECT * FROM places WHERE postal_code LIKE :q OR place_name LIKE :q OR admin_name1 LIKE :q", q=request.args.get("q") + "%")
 
     # Select 10 locations at most from a particular area
     if len(location) > 10:
         return jsonify([location[0], location[1], location[2], location[3], location[4], location[5],
-        location[6], location[7], location[8], location[9]])
+                        location[6], location[7], location[8], location[9]])
     else:
         return jsonify(location)
 
