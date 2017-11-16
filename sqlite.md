@@ -15,7 +15,7 @@ infiltrate the database.
 2.4. SELECT SUM(total) AS "Total Cash From 2010" FROM invoice WHERE invoiceid >83 AND invoiceid < 167
 
 2.5. SELECT Name FROM Track JOIN InvoiceLine JOIN Invoice ON InvoiceLine.InvoiceId = Invoice.InvoiceID AND Track.TrackId =
-InvoiceLine.TrackId WHERE CustomerId = 50 GROUP BY InvoiceDate
+InvoiceLine.TrackId WHERE CustomerId = 50
 
 2.6. One could use the GROUP BY clause by which they only have separate rows for each new composer and prevent duplicates.  They
 could then use COUNT(TrackId) to then show how many songs each composer has associated with them, should they ever want to access
