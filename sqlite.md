@@ -23,6 +23,6 @@ each individual song.
 
 ## Debrief
 
-a. I found problem set 7, lecture.DB, and the website http://www.sqlitetutorial.net helpful in answer this problem's questions.
+a. I found problem set 7, lecture.DB, and the website http://www.sqlitetutorial.net helpful in answering this problem's questions.
 
 b. I spent about 2.5 hours on this problem's questions.

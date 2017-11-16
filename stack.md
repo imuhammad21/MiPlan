@@ -2,7 +2,7 @@
 
 ## Questions
 
-3.1. __init__ is a method that allows a new instance of a class to be customized to a specific field.
+3.1. __init__ is a method that allows a new instance(s) of a class to be customized to a specific initial state.
 
 3.2. See `parser.py`.
 
