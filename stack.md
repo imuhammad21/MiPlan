@@ -19,6 +19,6 @@ starttag encountered previously that has not already been ended.
 a. I found the websites https://docs.python.org/3/library/html.parser.html,
 http://interactivepython.org/runestone/static/pythonds/BasicDS/ImplementingaStackinPython.html,
 and https://pythontips.com/2013/08/07/the-self-variable-in-python-explained/, in addition to the video and notes from Lecture 5 and
-Lecture 8, helpful in answering this problem's questions.
+Lecture 8 helpful in answering this problem's questions.
 
 b. I spent about 4 hours on this problem's questions.

@@ -18,4 +18,4 @@ values.  We can compare the numeric value of ints, which is why we cast them as 
 
 a. I found the following websites helpful in completing this problem's questions.
 
-b. I spent about an hour and 45 minutes on this problem's questions.
+b. I spent about 3 hours on this problem's questions.

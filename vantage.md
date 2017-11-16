@@ -16,6 +16,6 @@ eliminate the redundancy of having two identifiers which mean the same thing lis
 
 ## Debrief
 
-a. TODO
+a. I found the website https://www.alphavantage.co/documentation/#intraday helpful in answering this problem's questions.
 
-b. TODO minutes
+b. I spent about 1 hour on this problem's questions.
