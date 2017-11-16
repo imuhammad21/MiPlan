@@ -5,13 +5,13 @@ let students = [
     {name: "Brian", dorm: "Winthrop"}
 ];
 
-console.log("Before:")
+console.log("Before:");
 for (let student of students)
 {
     console.log(student.name + " from " + student.dorm);
 }
 students.sort(cmp);
-console.log("After:")
+console.log("After:");
 for (let student of students)
 {
     console.log(student.name + " from " + student.dorm);
