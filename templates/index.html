@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+{% block main %}
+<h2>Active Tasks</h2>
+<table class="table table-striped" style="width:100%">
+  <tr>
+    <th>Task</th>
+    <th><button type="button" class="btn-default" onclick= "location.href = '/psort';" >Priority</button></th>
+    <th><button type="button" class="btn-default" onclick= "location.href = '/tsort';" >Due Date</button></th>
+    <th>Time Remaining</th>
+    <th>Click to Complete</th>
+  </tr>
+
+{% for task in tasks %}
+    <tr>
+        <td style="word-wrap: break-word; max-width: 220px;">{{ task.name }}</td>
+        <td>{{ task.priority }}</td>
+        <td>{{ task.time }}</td>
+        <td><!DOCTYPE HTML>
+<head>
+<style>
+p {
+  text-align: center;
+  font-size: 15px;
+}
+</style>
+
+
+<p id="{{ task.id }}-time"></p>
+
+<script>
+// Set the date we're counting down to
+
+// Update the count down every 1 second, Counter adapted from W3 Schools: https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_countdown
+setInterval(function() {
+    var countDownDate = new Date("{{ task.time }}").getTime();
+
+    // Get todays date and time
+    var now = new Date().getTime();
+
+    // Find the distance between now an the count down date
+    var distance = countDownDate - now;
+
+    // Time calculations for days, hours, minutes and seconds
+    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    // Output the result in an element with id="demo"
+    document.getElementById("{{ task.id }}-time").innerHTML = days + "d " + hours + "h "
+    + minutes + "m " + seconds + "s ";
+
+    // If the count down is over, write some text
+    if (distance < 0) {
+        document.getElementById("{{ task.id }}-time").innerHTML = "Task Overdue!";
+    }
+}, 1000);
+</script>
+        </td>
+        <td>
+            <form action= "/completed" method="get">
+                <button name ="done" type="submit" value="{{ task.id }}">Done</button>
+            </form>
+        </td>
+    </tr>
+{% endfor %}
+
+</div>
+</table>
+<table class="table table-striped" style="width:100%">
+<h2>Completed Tasks</h2>
+    <tr>
+        <th>Task</th>
+        <th>Due Date</th>
+        <th>Return to Active</th>
+        <th>Delete Task</th>
+    </tr>
+    {% for task in completed %}
+    <tr>
+        <td style="word-wrap: break-word; max-width: 150px;">{{ task.name }}</td>
+        <td>{{ task.time }}</td>
+        <td>
+            <form action= "/incomplete" method="get">
+                <button name ="incomplete" type="submit" value="{{ task.id }}">Incomplete</button>
+            </form>
+        <td>
+            <form action= "/delete" method="get">
+                <button name ="delete" type="submit" value="{{ task.id }}">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
