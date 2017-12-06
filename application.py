@@ -55,6 +55,7 @@ def delete():
     db.execute("DELETE FROM tasks WHERE id=:taskid AND user_id=:id",
                taskid=taskid, id=session["user_id"])
     # Return tasks page
+
     return redirect("/")
 
 
