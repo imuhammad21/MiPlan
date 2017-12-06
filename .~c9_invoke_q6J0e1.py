@@ -7,7 +7,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import login_required
 
-# Initialize global variable to default
 sort = 'default'
 
 # Configure application
@@ -39,97 +38,65 @@ db = SQL("sqlite:///miplan.db")
 def completed():
     # Set value of the button (id of the task) equal to variable
     taskid = request.values.get('done')
-    # Getting from database, all user's tasks where completed = 1
-    db.execute("UPDATE tasks SET completed=:completed WHERE id=:taskid AND user_id=:id",
-               completed="1", taskid=taskid, id=session["user_id"])
+    # Getting from database, all tasks where completed = 1
+    db.execute("UPDATE tasks SET completed=:completed WHERE id=:taskid AND user_id=:id", completed="1",taskid=taskid, id=session["user_id"])
     # Return the tasks page
     return redirect("/")
-
 
 @app.route("/delete")
 @login_required
 def delete():
-    # Set value of the button equal to taskid variable
+    # Set value of the button equal to variable
     taskid = request.values.get('delete')
     # Remove task from database
-    db.execute("DELETE FROM tasks WHERE id=:taskid AND user_id=:id",
-               taskid=taskid, id=session["user_id"])
+    db.execute("DELETE FROM tasks WHERE id=:taskid AND user_id=:id", taskid=taskid, id=session["user_id"])
     # Return tasks page
     return redirect("/")
-
 
 @app.route("/incomplete")
 @login_required
 def incomplete():
-    # Set value of the button equal to taskid variable
     taskid = request.values.get('incomplete')
-    # Update the database to set completed = 0 for the user's completed task
-    db.execute("UPDATE tasks SET completed=:completed WHERE id=:taskid AND user_id=:id",
-               completed="0", taskid=taskid, id=session["user_id"])
-    # Return the tasks page
+    db.execute("UPDATE tasks SET completed=:completed WHERE id=:taskid AND user_id=:id", completed="0",taskid=taskid, id=session["user_id"])
     return redirect("/")
-
 
 @app.route("/psort")
 @login_required
 def psort():
     global sort
     sort = 'priority'
-    # Select all user's tasks where completed = 0 and order them by priority
-    psort = db.execute(
-        "SELECT * FROM tasks WHERE user_id=:id AND completed=0 ORDER BY priority", id=session["user_id"])
-    # Select all user's tasks where completed = 1
-    completed = db.execute(
-        "SELECT * FROM tasks WHERE user_id=:id AND completed=1", id=session["user_id"])
-    # Return templates with ordered information
-    return render_template("index.html", tasks=psort, completed=completed)
-
+    psort = db.execute("SELECT * FROM tasks WHERE user_id=:id AND completed=0 ORDER BY priority", id=session["user_id"])
+    completed = db.execute("SELECT * FROM tasks WHERE user_id=:id AND completed=1", id=session["user_id"])
+    return render_template("index.html",tasks=psort, completed=completed)
 
 @app.route("/tsort")
 @login_required
 def tsort():
     global sort
     sort = 'time'
-    # Select all user's tasks where completed = 0 and order the by time
-    tsort = db.execute(
-        "SELECT * FROM tasks WHERE user_id=:id AND completed=0 ORDER BY time", id=session["user_id"])
-    # Select all user's tasks where completed = 1
-    completed = db.execute(
-        "SELECT * FROM tasks WHERE user_id=:id AND completed=1 ", id=session["user_id"])
-    # Return templates with ordered information
-    return render_template("index.html", tasks=tsort, completed=completed)
-
+    tsort = db.execute("SELECT * FROM tasks WHERE user_id=:id AND completed=0 ORDER BY time", id=session["user_id"])
+    completed = db.execute("SELECT * FROM tasks WHERE user_id=:id AND completed=1 ", id=session["user_id"])
+    return render_template("index.html",tasks=tsort, completed=completed)
 
 @app.route("/")
 @login_required
 def index():
-    # Default sorting selects all user's tasks without ordering
     if sort == 'default':
-        tasks = db.execute("SELECT * FROM tasks WHERE user_id=:id AND completed=0",
-                           id=session["user_id"])
-        completed = db.execute(
-            "SELECT * FROM tasks WHERE user_id=:id AND completed=1", id=session["user_id"])
+        tasks = db.execute("SELECT * FROM tasks WHERE user_id=:id AND completed=0", id=session["user_id"])
+        completed = db.execute("SELECT * FROM tasks WHERE user_id=:id AND completed=1", id=session["user_id"])
         return render_template("index.html", tasks=tasks, completed=completed)
-    # If ordered by priority, get from database user's tasks ordered by priority
     if sort == 'priority':
-        psort = db.execute(
-            "SELECT * FROM tasks WHERE user_id=:id AND completed=0 ORDER BY priority", id=session["user_id"])
-        completed = db.execute(
-            "SELECT * FROM tasks WHERE user_id=:id AND completed=1", id=session["user_id"])
+        psort = db.execute("SELECT * FROM tasks WHERE user_id=:id AND completed=0 ORDER BY priority", id=session["user_id"])
+        completed = db.execute("SELECT * FROM tasks WHERE user_id=:id AND completed=1", id=session["user_id"])
         return render_template("index.html", tasks=psort, completed=completed)
-    # If ordered by time, get from database user's tasks ordered by time
     if sort == 'time':
-        tsort = db.execute(
-            "SELECT * FROM tasks WHERE user_id=:id AND completed=0 ORDER BY time", id=session["user_id"])
-        completed = db.execute(
-            "SELECT * FROM tasks WHERE user_id=:id AND completed=1", id=session["user_id"])
+        tsort = db.execute("SELECT * FROM tasks WHERE user_id=:id AND completed=0 ORDER BY time", id=session["user_id"])
+        completed = db.execute("SELECT * FROM tasks WHERE user_id=:id AND completed=1", id=session["user_id"])
         return render_template("index.html", tasks=tsort, completed=completed)
-
 
 @app.route("/home")
 def home():
     return render_template("home.html")
-
 
 @app.route("/add", methods=["GET", "POST"])
 @login_required
@@ -149,7 +116,6 @@ def add():
         return redirect("/")
     else:
         return render_template("add.html")
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -197,7 +163,6 @@ def logout():
     session.clear()
     # Redirect user to login form
     return redirect("/")
-
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
