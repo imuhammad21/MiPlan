@@ -106,7 +106,7 @@ def tsort():
 def index():
     # Default sorting selects all user's tasks without ordering
     if sort == 'default':
-        tasks = db.execute("SELECT * FROM tasks WHERE user_id=:id AND completed=0",
+        tasks = db.execute("SELECT * FROM tasks WHERE user_id=:id AND completed=0 ORDER BY id DESC",
                            id=session["user_id"])
         completed = db.execute(
             "SELECT * FROM tasks WHERE user_id=:id AND completed=1", id=session["user_id"])
@@ -149,7 +149,7 @@ def add():
         # Redirect to homepage
         return redirect("/")
     else:
-        return render_template("add.html")
+        return render_template("add.html") 
 
 
 @app.route("/login", methods=["GET", "POST"])
