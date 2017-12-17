@@ -30,7 +30,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure CS50 Library to use SQLite database
-db = SQL("https://data.heroku.com/datastores/d7bb82b2-ce68-401b-a3c8-a638308157a0")
+db = SQL("sqlite:///miplan.db")
 # db = SQL("postgres://plwpuvncsvzzvj:6d2bacc9737f579f4f0697b90361e375e1dc3d705522eaac3acdfd0b8ee50bf0@ec2-184-73-206-155.compute-1.amazonaws.com:5432/de2gv29arbdie5")
 
 
